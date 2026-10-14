@@ -56,15 +56,20 @@ draft: true               # optional; drafts are hidden from production builds
    - Build output directory: `dist`
    - Root directory: `/`
    - Production branch: `main`
-3. Pin the toolchain under **Settings → Environment variables → (Build)**:
-   - `NODE_VERSION` = `24.12.0`
-   - `NPM_VERSION` = `11.6.2`
-   The builder must use the same npm major that wrote `package-lock.json`.
-   (Astro 7's markdown/bundler chain has platform-specific optional deps; an
-   older npm's `npm ci` rejects a newer npm's lockfile as "out of sync" —
-   `Missing: @emnapi/core … from lock file`.)
-   If versions ever drift: run `npm install` locally to refresh the lockfile
-   and bump `NPM_VERSION` to match `npm -v`.
+3. **Toolchain note (important):** Cloudflare's build image runs npm **10.9.2**
+   and installs with `npm ci`, which rejects lockfiles written by npm 11
+   (Astro 7's platform-specific optional deps, `@emnapi/*`, get serialized
+   differently). This repo therefore ships an npm-10.9.2-format `package-lock.json`.
+   Whenever you add/update/remove a dependency, finish with:
+
+   ```bash
+   npm run relock   # regenerates the lockfile using npm 10.9.2, matching CI
+   ```
+
+   and commit it. No Cloudflare environment variables needed.
+   (If a future build image's npm mismatches again, the escape hatch is a Build
+   env var `SKIP_DEPENDENCY_INSTALL=true` with build command
+   `npm install && npm run build`.)
 4. After the first successful deploy, set the real public URL in
    `src/data/site.ts` (`site.url`) → commit → it redeploys automatically.
 
