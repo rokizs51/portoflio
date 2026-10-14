@@ -1,0 +1,57 @@
+---
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import Layout from '../../components/Layout.astro';
+
+const posts = (
+  await getCollection('writing', ({ data }) =>
+    import.meta.env.PROD ? data.draft !== true : true,
+  )
+).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Group newest-first posts by publication year.
+const grouped = new Map<string, CollectionEntry<'writing'>[]>();
+for (const post of posts) {
+  const year = String(post.data.pubDate.getFullYear());
+  grouped.set(year, [...(grouped.get(year) ?? []), post]);
+}
+const years = [...grouped.entries()].sort((a, b) => Number(b[0]) - Number(a[0]));
+
+const fmt = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+---
+
+<Layout
+  title="Writing"
+  description="Notes on what I'm learning, written while the problem is still warm."
+  active="writing"
+>
+  <h2 class="sr-only">All writing</h2>
+  {
+    years.length === 0 ? (
+      <p class="note">Nothing published yet — check back soon.</p>
+    ) : (
+      <div class="writing-list">
+        {years.map(([year, list]) => (
+          <section>
+            <h3 class="year">{year}</h3>
+            <ul>
+              {list.map((post) => (
+                <li>
+                  <a class="writing-row" href={`/writing/${post.id}/`}>
+                    <span class="title">{post.data.title}</span>
+                    <time datetime={post.data.pubDate.toISOString()}>
+                      {fmt.format(post.data.pubDate)}
+                    </time>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    )
+  }
+  <p class="note">
+    Subscribe via <a href="/rss.xml">RSS</a> to get new posts as they land.
+  </p>
+</Layout>

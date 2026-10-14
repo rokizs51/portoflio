@@ -1,0 +1,26 @@
+---
+import Layout from '../components/Layout.astro';
+import { site } from '../data/site';
+---
+
+<Layout active="about">
+  <div class="prose">
+    <p>
+      I'm Roki. I like building things, taking them apart, and keeping notes on
+      what I learn along the way — which is exactly what this site is for.
+    </p>
+    <!-- TODO: swap in 1–2 sentences about what you actually do: role, stack, where you're based. -->
+    <p>
+      These days I spend most of my time on <strong>what I'm currently
+      learning</strong>, and whatever's worth writing about ends up under
+      <a href="/writing/">Writing</a>.
+    </p>
+    <p>
+      If something I wrote turns out to be wrong, the fix usually becomes the
+      next post. That's the whole system.
+    </p>
+    <p>
+      The fastest way to reach me is <a href={site.social.email}>email</a>.
+    </p>
+  </div>
+</Layout>
