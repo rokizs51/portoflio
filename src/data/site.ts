@@ -16,10 +16,9 @@ export const site = {
     { key: 'writing', label: 'Writing', href: '/writing/' },
   ] as const,
   social: {
-    // TODO: replace the placeholders with your real links.
-    email: 'mailto:you@example.com',
-    x: 'https://x.com/your-handle',
-    github: 'https://github.com/your-username',
-    linkedin: 'https://www.linkedin.com/in/your-handle',
+    email: 'mailto:zainsroki@gmail.com',
+    x: null, // set a URL here to show the X/Twitter icon
+    github: 'https://github.com/rokizs51',
+    linkedin: 'https://www.linkedin.com/in/roki-zain',
   },
 } as const;
