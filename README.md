@@ -44,15 +44,31 @@ draft: true               # optional; drafts are hidden from production builds
 4. `public/robots.txt` → update the Sitemap URL.
 5. `src/content/writing/` → keep or delete the two starter posts.
 
-## Deploying
+## Deploying — Cloudflare Pages (auto-deploy on push)
 
-Any static host works — the build output is the `dist/` folder.
+1. Cloudflare dashboard → **Workers & Pages** → **Create** → **Pages** →
+   **Connect to Git** → pick the repository you push to (`rokizs51/portoflio`).
+   Do **not** use a "clone/seed/import" flow that copies the repo — Pages would
+   build from the *copy*, so pushes to your real repo would never trigger a build.
+2. Build settings:
+   - Framework preset: **Astro**
+   - Build command: `npm run build`
+   - Build output directory: `dist`
+   - Root directory: `/`
+   - Production branch: `main`
+3. Pin the toolchain under **Settings → Environment variables → (Build)**:
+   - `NODE_VERSION` = `24.12.0`
+   - `NPM_VERSION` = `11.6.2`
+   The builder must use the same npm major that wrote `package-lock.json`.
+   (Astro 7's markdown/bundler chain has platform-specific optional deps; an
+   older npm's `npm ci` rejects a newer npm's lockfile as "out of sync" —
+   `Missing: @emnapi/core … from lock file`.)
+   If versions ever drift: run `npm install` locally to refresh the lockfile
+   and bump `NPM_VERSION` to match `npm -v`.
+4. After the first successful deploy, set the real public URL in
+   `src/data/site.ts` (`site.url`) → commit → it redeploys automatically.
 
-- **Cloudflare Pages** — build command `npm run build`, output directory `dist`.
-- **Netlify / Vercel** — framework preset "Astro", everything else auto-detected.
-- **GitHub Pages** — use Astro's official GitHub Action template
-  ([Deploy to GitHub Pages](https://docs.astro.build/en/recipes/deploy/#deploying-to-github-pages))
-  and set `site.url` to your Pages URL.
+Any other static host works too (Netlify/Vercel auto-detect Astro; output `dist`).
 
 ## Notes on behavior
 
