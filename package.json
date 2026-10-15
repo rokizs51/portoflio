@@ -10,7 +10,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "relock": "npx npm@10.9.2 install --package-lock-only"
+    "relock": "node scripts/relock.mjs"
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.19",

@@ -57,16 +57,19 @@ draft: true               # optional; drafts are hidden from production builds
    - Root directory: `/`
    - Production branch: `main`
 3. **Toolchain note (important):** Cloudflare's build image runs npm **10.9.2**
-   and installs with `npm ci`, which rejects lockfiles written by npm 11
-   (Astro 7's platform-specific optional deps, `@emnapi/*`, get serialized
-   differently). This repo therefore ships an npm-10.9.2-format `package-lock.json`.
+   on **linux-x64** and installs with `npm ci`, which strictly validates
+   `package-lock.json`. Astro 7 pulls platform-specific optional binaries
+   (sharp, satteri, `@emnapi/*`), so the lockfile must record *every* platform.
    Whenever you add/update/remove a dependency, finish with:
 
    ```bash
-   npm run relock   # regenerates the lockfile using npm 10.9.2, matching CI
+   npm run relock   # clean lockfile regen with npm 10.9.2 + win32/linux ci checks
    ```
 
-   and commit it. No Cloudflare environment variables needed.
+   and commit the resulting `package-lock.json`. Never regenerate the lockfile
+   with `npm install --package-lock-only` on a warm `node_modules` — it writes a
+   Windows-only lockfile that breaks `npm ci` on Cloudflare's Linux builder.
+   No Cloudflare environment variables needed.
    (If a future build image's npm mismatches again, the escape hatch is a Build
    env var `SKIP_DEPENDENCY_INSTALL=true` with build command
    `npm install && npm run build`.)
